@@ -18,17 +18,26 @@ export default function LinkCard({ link }: LinkCardProps) {
       href={link.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex flex-col gap-2 rounded-lg border border-black/10 p-4 transition-colors hover:border-black/30 hover:bg-black/[.02] dark:border-white/15 dark:hover:border-white/40 dark:hover:bg-white/5"
+      className="card-hover flex w-full flex-col gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4"
     >
-      <h3 className="truncate text-base font-semibold">{link.title}</h3>
+      <h3 className="truncate text-base font-semibold leading-[1.4] text-[var(--text)]">
+        {link.title}
+      </h3>
       {link.description && (
-        <p className="line-clamp-2 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="line-clamp-2 text-sm leading-[1.4] text-[var(--text-sub)]">
           {link.description}
         </p>
       )}
-      <div className="mt-auto flex items-center justify-between pt-2 text-xs text-zinc-500">
-        <span className="truncate">{hostnameOf(link.url)}</span>
-        <time dateTime={link.createdAt}>{link.createdAt}</time>
+      <div className="mt-auto flex items-center justify-between gap-2 pt-2">
+        <span className="truncate rounded bg-[var(--hover-bg)] px-2 py-0.5 text-[13px] leading-[1.4] text-[var(--text)]">
+          {hostnameOf(link.url)}
+        </span>
+        <time
+          dateTime={link.createdAt}
+          className="shrink-0 text-[13px] text-[var(--text-sub)]"
+        >
+          {link.createdAt}
+        </time>
       </div>
     </a>
   );

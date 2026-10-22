@@ -1,26 +1,78 @@
 @import "tailwindcss";
 
+/* Notion 스타일 디자인 토큰 (라이트모드 전용) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --text: #37352f;
+  /* 가이드의 #9B9A97은 흰 배경에서 명암비 2.8:1이라 3:1 이상이 되도록 어둡게 조정 */
+  --text-sub: #787774;
+  --placeholder: #8f8e8a;
+  --border: #e3e3e0;
+  --accent: #2eaadc;
+  --accent-hover: #2898c4;
+  --hover-bg: #f1f1ef;
+  --error: #eb5757;
+  --success: #4dab9a;
+  --header-bg: rgba(247, 247, 245, 0.8);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    opacity 0.15s ease;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo",
+    "Noto Sans KR", sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* 호버 효과 (서버 컴포넌트에서도 쓸 수 있도록 CSS 클래스로 정의) */
+.card-hover:hover {
+  background: var(--bg);
+}
+
+.nav-item-hover:hover {
+  background: var(--hover-bg);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--hover-bg);
+}
+
+.link-accent:hover {
+  text-decoration: underline;
+}
+
+.field::placeholder {
+  color: var(--placeholder);
+}
+
+.field:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.field[aria-invalid="true"] {
+  border-color: var(--error);
+}
+
+/* 셀렉트 화살표 */
+.select-field {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23787774' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
 }
