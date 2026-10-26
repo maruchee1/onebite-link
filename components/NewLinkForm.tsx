@@ -1,18 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import type { Folder } from "@/lib/types";
-
-type NewLinkFormProps = {
-  folders: Folder[];
-};
+import { useFolders } from "@/lib/folderStore";
 
 const fieldClass =
   "field w-full rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-base text-[var(--text)]";
 
-export default function NewLinkForm({ folders }: NewLinkFormProps) {
+export default function NewLinkForm() {
+  const folders = useFolders();
   const [url, setUrl] = useState("");
-  const [folderId, setFolderId] = useState(folders[0]?.id ?? "");
+  // 사용자가 고르기 전까지는 첫 번째 폴더를 기본 선택
+  const [selected, setSelected] = useState<string | null>(null);
+  const folderId = selected ?? folders[0]?.id ?? "";
 
   const canSave = url.trim() !== "" && folderId !== "";
 
@@ -48,7 +47,7 @@ export default function NewLinkForm({ folders }: NewLinkFormProps) {
         <select
           id="link-folder"
           value={folderId}
-          onChange={(e) => setFolderId(e.target.value)}
+          onChange={(e) => setSelected(e.target.value)}
           className={`${fieldClass} select-field`}
         >
           {folders.map((folder) => (

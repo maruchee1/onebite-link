@@ -1,8 +1,9 @@
+"use client";
+
 import Link from "next/link";
-import type { Folder } from "@/lib/types";
+import { useFolders } from "@/lib/folderStore";
 
 type SidebarProps = {
-  folders: Folder[];
   totalCount: number;
   selectedFolderId?: string; // undefined면 All 선택
 };
@@ -20,11 +21,8 @@ function CountBadge({ count }: { count: number }) {
   );
 }
 
-export default function Sidebar({
-  folders,
-  totalCount,
-  selectedFolderId,
-}: SidebarProps) {
+export default function Sidebar({ totalCount, selectedFolderId }: SidebarProps) {
+  const folders = useFolders();
   const isAll = selectedFolderId === undefined;
 
   return (
