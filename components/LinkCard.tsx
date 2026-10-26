@@ -18,8 +18,21 @@ export default function LinkCard({ link }: LinkCardProps) {
       href={link.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="card-hover flex w-full flex-col gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4"
+      className="card-hover flex w-full flex-col gap-2 overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4"
     >
+      {link.thumbnail && (
+        <div className="-mx-4 -mt-4 mb-1 aspect-[1.91/1] overflow-hidden border-b border-[var(--border)] bg-[var(--hover-bg)]">
+          {/* 외부 임의 도메인의 이미지라 next/image 대신 일반 img 사용 */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={link.thumbnail}
+            alt=""
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            className="h-full w-full object-cover"
+          />
+        </div>
+      )}
       <h3 className="truncate text-base font-semibold leading-[1.4] text-[var(--text)]">
         {link.title}
       </h3>

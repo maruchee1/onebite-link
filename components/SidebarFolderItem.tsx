@@ -12,6 +12,7 @@ import TrashIcon from "./TrashIcon";
 
 type SidebarFolderItemProps = {
   folder: Folder;
+  linkCount: number;
   active: boolean;
 };
 
@@ -20,7 +21,11 @@ type ModalKind = "edit" | "delete" | null;
 const actionClass =
   "folder-action flex h-7 w-7 items-center justify-center rounded text-[var(--text-sub)]";
 
-export default function SidebarFolderItem({ folder, active }: SidebarFolderItemProps) {
+export default function SidebarFolderItem({
+  folder,
+  linkCount,
+  active,
+}: SidebarFolderItemProps) {
   const router = useRouter();
   const [modal, setModal] = useState<ModalKind>(null);
   const closeModal = () => setModal(null);
@@ -47,7 +52,7 @@ export default function SidebarFolderItem({ folder, active }: SidebarFolderItemP
       >
         <span className="truncate">{folder.name}</span>
         <span className="folder-count absolute right-3 rounded bg-[var(--hover-bg)] px-2 py-0.5 text-[13px] leading-[1.4] text-[var(--text-sub)]">
-          {folder.linkCount}
+          {linkCount}
         </span>
       </Link>
 

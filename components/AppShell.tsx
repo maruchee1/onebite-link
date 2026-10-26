@@ -1,6 +1,5 @@
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import { links } from "@/lib/mockData";
 
 type AppShellProps = {
   selectedFolderId?: string;
@@ -13,7 +12,7 @@ export default function AppShell({ selectedFolderId, children }: AppShellProps) 
     <div className="flex min-h-screen flex-col bg-[var(--bg)]">
       <Header />
       <div className="flex flex-1">
-        <Sidebar totalCount={links.length} selectedFolderId={selectedFolderId} />
+        <Sidebar selectedFolderId={selectedFolderId} />
         <main className="flex-1 px-6 pt-10 pb-16">
           <div className="mx-auto w-full max-w-[960px]">{children}</div>
         </main>

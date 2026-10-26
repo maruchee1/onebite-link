@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useFolder } from "@/lib/folderStore";
-import { getLinksByFolderId } from "@/lib/mockData";
+import { useLinksByFolder } from "@/lib/linkStore";
 import LinkGrid from "./LinkGrid";
 import PageTitle from "./PageTitle";
 
@@ -10,9 +10,10 @@ type FolderViewProps = {
   id: string;
 };
 
-/** 폴더 하나의 제목과 링크 그리드. 폴더 저장소를 구독하므로 새로 추가된 폴더도 표시된다. */
+/** 폴더 하나의 제목과 링크 그리드. 폴더·링크 저장소를 구독하므로 새로 추가된 항목도 표시된다. */
 export default function FolderView({ id }: FolderViewProps) {
   const folder = useFolder(id);
+  const links = useLinksByFolder(id);
 
   if (!folder) {
     return (
@@ -26,8 +27,6 @@ export default function FolderView({ id }: FolderViewProps) {
       </>
     );
   }
-
-  const links = getLinksByFolderId(folder.id);
 
   return (
     <>

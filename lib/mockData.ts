@@ -1,9 +1,9 @@
 import type { Folder, LinkItem } from "./types";
 
 export const folders: Folder[] = [
-  { id: "dev", name: "개발", linkCount: 3 },
-  { id: "design", name: "디자인", linkCount: 2 },
-  { id: "reading", name: "읽을거리", linkCount: 1 },
+  { id: "dev", name: "개발" },
+  { id: "design", name: "디자인" },
+  { id: "reading", name: "읽을거리" },
 ];
 
 export const links: LinkItem[] = [
@@ -56,7 +56,3 @@ export const links: LinkItem[] = [
     createdAt: "2026-10-10",
   },
 ];
-
-export function getLinksByFolderId(folderId: string): LinkItem[] {
-  return links.filter((link) => link.folderId === folderId);
-}

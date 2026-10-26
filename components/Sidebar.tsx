@@ -2,16 +2,22 @@
 
 import Link from "next/link";
 import { useFolders } from "@/lib/folderStore";
+import { useLinks } from "@/lib/linkStore";
 import SidebarFolderItem from "./SidebarFolderItem";
 
 type SidebarProps = {
-  totalCount: number;
   selectedFolderId?: string; // undefined면 All 선택
 };
 
-export default function Sidebar({ totalCount, selectedFolderId }: SidebarProps) {
+export default function Sidebar({ selectedFolderId }: SidebarProps) {
   const folders = useFolders();
+  const links = useLinks();
   const isAll = selectedFolderId === undefined;
+
+  const countByFolder = new Map<string, number>();
+  for (const link of links) {
+    countByFolder.set(link.folderId, (countByFolder.get(link.folderId) ?? 0) + 1);
+  }
 
   return (
     <aside className="w-60 shrink-0 border-r border-[var(--border)] bg-[var(--bg)] px-3 py-6">
@@ -24,7 +30,7 @@ export default function Sidebar({ totalCount, selectedFolderId }: SidebarProps) 
       >
         <span>All</span>
         <span className="rounded bg-[var(--hover-bg)] px-2 py-0.5 text-[13px] leading-[1.4] text-[var(--text-sub)]">
-          {totalCount}
+          {links.length}
         </span>
       </Link>
 
@@ -36,6 +42,7 @@ export default function Sidebar({ totalCount, selectedFolderId }: SidebarProps) 
           <SidebarFolderItem
             key={folder.id}
             folder={folder}
+            linkCount={countByFolder.get(folder.id) ?? 0}
             active={folder.id === selectedFolderId}
           />
         ))}
