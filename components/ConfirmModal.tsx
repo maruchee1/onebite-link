@@ -1,24 +1,27 @@
 "use client";
 
-import type { Folder } from "@/lib/types";
 import Modal from "./Modal";
 
-type DeleteFolderModalProps = {
-  folder: Folder;
+type ConfirmModalProps = {
+  title: string;
+  /** 확인 질문. 강조할 대상 이름은 <strong>으로 감싸 넘긴다. */
+  message: React.ReactNode;
+  confirmLabel?: string;
   onConfirm: () => void;
   onClose: () => void;
 };
 
-export default function DeleteFolderModal({
-  folder,
+/** 되돌릴 수 없는 작업(삭제 등) 전에 한 번 더 묻는 모달 */
+export default function ConfirmModal({
+  title,
+  message,
+  confirmLabel = "삭제",
   onConfirm,
   onClose,
-}: DeleteFolderModalProps) {
+}: ConfirmModalProps) {
   return (
-    <Modal title="폴더 삭제" onClose={onClose}>
-      <p className="mt-3 text-sm leading-[1.6] text-[var(--text)]">
-        <span className="font-semibold">{folder.name}</span> 폴더를 삭제할까요?
-      </p>
+    <Modal title={title} onClose={onClose}>
+      <p className="mt-3 text-sm leading-[1.6] text-[var(--text)]">{message}</p>
       <p className="mt-1 text-sm leading-[1.4] text-[var(--text-sub)]">
         이 작업은 되돌릴 수 없습니다.
       </p>
@@ -37,7 +40,7 @@ export default function DeleteFolderModal({
           onClick={onConfirm}
           className="btn-danger rounded-md bg-[var(--error)] px-4 py-2 text-sm font-medium leading-none text-white"
         >
-          삭제
+          {confirmLabel}
         </button>
       </div>
     </Modal>

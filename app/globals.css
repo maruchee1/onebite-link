@@ -82,6 +82,28 @@ body {
   color: var(--error);
 }
 
+/* 링크 카드: 마우스를 올리면 우측 상단에 수정/삭제 버튼 표시 */
+.link-actions {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.link-card:hover .link-actions,
+.link-card:has(.link-action:focus-visible) .link-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.link-action:hover {
+  background: var(--hover-bg);
+  color: var(--text);
+}
+
+.link-action-danger:hover {
+  border-color: var(--error);
+  color: var(--error);
+}
+
 .link-accent:hover {
   text-decoration: underline;
 }

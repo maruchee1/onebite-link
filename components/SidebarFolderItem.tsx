@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { removeFolder, renameFolder } from "@/lib/folderStore";
 import type { Folder } from "@/lib/types";
-import DeleteFolderModal from "./DeleteFolderModal";
+import ConfirmModal from "./ConfirmModal";
 import FolderFormModal from "./FolderFormModal";
 import PencilIcon from "./PencilIcon";
 import TrashIcon from "./TrashIcon";
@@ -87,7 +87,16 @@ export default function SidebarFolderItem({
         />
       )}
       {modal === "delete" && (
-        <DeleteFolderModal folder={folder} onConfirm={handleDelete} onClose={closeModal} />
+        <ConfirmModal
+          title="폴더 삭제"
+          message={
+            <>
+              <strong className="font-semibold">{folder.name}</strong> 폴더를 삭제할까요?
+            </>
+          }
+          onConfirm={handleDelete}
+          onClose={closeModal}
+        />
       )}
     </li>
   );

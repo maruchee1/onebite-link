@@ -37,6 +37,20 @@ export function addLink(input: NewLinkInput): LinkItem {
   return link;
 }
 
+export type LinkPatch = Pick<LinkItem, "folderId" | "title" | "description">;
+
+/** 링크의 폴더, 제목, 설명을 수정한다 */
+export function updateLink(id: string, patch: LinkPatch): void {
+  store.update((prev) =>
+    prev.map((link) => (link.id === id ? { ...link, ...patch } : link)),
+  );
+}
+
+/** 링크를 삭제한다 */
+export function removeLink(id: string): void {
+  store.update((prev) => prev.filter((link) => link.id !== id));
+}
+
 /** 전체 링크 목록을 구독하는 훅 */
 export function useLinks(): LinkItem[] {
   return store.useValue();
