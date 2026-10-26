@@ -3,9 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { removeFolder } from "@/lib/folderStore";
+import { removeFolder, renameFolder } from "@/lib/folderStore";
 import type { Folder } from "@/lib/types";
 import DeleteFolderModal from "./DeleteFolderModal";
+import FolderFormModal from "./FolderFormModal";
+import PencilIcon from "./PencilIcon";
 import TrashIcon from "./TrashIcon";
 
 type SidebarFolderItemProps = {
@@ -13,13 +15,23 @@ type SidebarFolderItemProps = {
   active: boolean;
 };
 
+type ModalKind = "edit" | "delete" | null;
+
+const actionClass =
+  "folder-action flex h-7 w-7 items-center justify-center rounded text-[var(--text-sub)]";
+
 export default function SidebarFolderItem({ folder, active }: SidebarFolderItemProps) {
   const router = useRouter();
-  const [confirming, setConfirming] = useState(false);
+  const [modal, setModal] = useState<ModalKind>(null);
+  const closeModal = () => setModal(null);
+
+  const handleRename = (name: string) => {
+    renameFolder(folder.id, name);
+  };
 
   const handleDelete = () => {
     removeFolder(folder.id);
-    setConfirming(false);
+    closeModal();
     // 보고 있던 폴더를 지웠으면 전체 목록으로 이동
     if (active) router.push("/");
   };
@@ -29,32 +41,48 @@ export default function SidebarFolderItem({ folder, active }: SidebarFolderItemP
       <Link
         href={`/folder/${folder.id}`}
         aria-current={active ? "page" : undefined}
-        className={`nav-item-hover flex w-full items-center justify-between rounded-md py-2 pl-3 pr-10 text-sm ${
+        className={`nav-item-hover flex w-full items-center justify-between rounded-md py-2 pl-3 pr-[72px] text-sm ${
           active ? "bg-[var(--hover-bg)] font-semibold" : ""
         } text-[var(--text)]`}
       >
         <span className="truncate">{folder.name}</span>
-        <span className="folder-count rounded bg-[var(--hover-bg)] px-2 py-0.5 text-[13px] leading-[1.4] text-[var(--text-sub)]">
+        <span className="folder-count absolute right-3 rounded bg-[var(--hover-bg)] px-2 py-0.5 text-[13px] leading-[1.4] text-[var(--text-sub)]">
           {folder.linkCount}
         </span>
       </Link>
 
-      <button
-        type="button"
-        onClick={() => setConfirming(true)}
-        aria-label={`${folder.name} 폴더 삭제`}
-        title="폴더 삭제"
-        className="folder-delete absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded text-[var(--text-sub)]"
-      >
-        <TrashIcon />
-      </button>
+      <div className="folder-actions absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-0.5">
+        <button
+          type="button"
+          onClick={() => setModal("edit")}
+          aria-label={`${folder.name} 폴더 이름 수정`}
+          title="이름 수정"
+          className={actionClass}
+        >
+          <PencilIcon />
+        </button>
+        <button
+          type="button"
+          onClick={() => setModal("delete")}
+          aria-label={`${folder.name} 폴더 삭제`}
+          title="폴더 삭제"
+          className={`${actionClass} folder-action-danger`}
+        >
+          <TrashIcon />
+        </button>
+      </div>
 
-      {confirming && (
-        <DeleteFolderModal
-          folder={folder}
-          onConfirm={handleDelete}
-          onClose={() => setConfirming(false)}
+      {modal === "edit" && (
+        <FolderFormModal
+          title="폴더 이름 수정"
+          submitLabel="저장"
+          initialName={folder.name}
+          onSubmit={handleRename}
+          onClose={closeModal}
         />
+      )}
+      {modal === "delete" && (
+        <DeleteFolderModal folder={folder} onConfirm={handleDelete} onClose={closeModal} />
       )}
     </li>
   );

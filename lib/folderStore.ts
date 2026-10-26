@@ -87,6 +87,15 @@ export function addFolder(name: string): Folder {
   return folder;
 }
 
+/** 폴더 이름을 바꾼다 */
+export function renameFolder(id: string, name: string): void {
+  folders = folders.map((folder) =>
+    folder.id === id ? { ...folder, name: name.trim() } : folder,
+  );
+  persist();
+  emit();
+}
+
 /** 폴더를 삭제한다 */
 export function removeFolder(id: string): void {
   folders = folders.filter((folder) => folder.id !== id);

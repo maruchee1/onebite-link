@@ -56,23 +56,29 @@ body {
   background: var(--error-hover);
 }
 
-/* 사이드바 폴더 항목: 마우스를 올리면 링크 수 대신 삭제 버튼 표시 */
-.folder-delete {
+/* 사이드바 폴더 항목: 마우스를 올리면 링크 수 대신 수정/삭제 버튼 표시 */
+.folder-actions {
   opacity: 0;
+  pointer-events: none;
 }
 
-.folder-item:hover .folder-delete,
-.folder-delete:focus-visible {
+.folder-item:hover .folder-actions,
+.folder-item:has(.folder-action:focus-visible) .folder-actions {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .folder-item:hover .folder-count,
-.folder-item:has(.folder-delete:focus-visible) .folder-count {
+.folder-item:has(.folder-action:focus-visible) .folder-count {
   opacity: 0;
 }
 
-.folder-delete:hover {
+.folder-action:hover {
   background: var(--border);
+  color: var(--text);
+}
+
+.folder-action-danger:hover {
   color: var(--error);
 }
 
