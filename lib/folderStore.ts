@@ -87,6 +87,13 @@ export function addFolder(name: string): Folder {
   return folder;
 }
 
+/** 폴더를 삭제한다 */
+export function removeFolder(id: string): void {
+  folders = folders.filter((folder) => folder.id !== id);
+  persist();
+  emit();
+}
+
 /** 폴더 목록을 구독하는 훅 */
 export function useFolders(): Folder[] {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
