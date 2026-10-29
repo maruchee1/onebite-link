@@ -24,3 +24,22 @@ export async function getFolders(): Promise<Folder[]> {
 
   return (data as FolderRow[]).map((row) => ({ id: String(row.id), name: row.name }));
 }
+
+/** id로 폴더 하나를 가져온다. 없거나 id가 숫자가 아니면 null을 돌려준다. */
+export async function getFolder(id: string): Promise<Folder | null> {
+  const folderId = Number(id);
+  if (!Number.isInteger(folderId)) return null;
+
+  const supabase = createClient(await cookies());
+  const { data, error } = await supabase
+    .from("folders")
+    .select("id, name")
+    .eq("id", folderId)
+    .maybeSingle();
+
+  if (error) throw new Error(`폴더를 불러오지 못했습니다: ${error.message}`);
+  if (!data) return null;
+
+  const row = data as FolderRow;
+  return { id: String(row.id), name: row.name };
+}

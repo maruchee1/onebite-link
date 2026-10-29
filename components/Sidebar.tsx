@@ -1,21 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useLinks } from "@/lib/linkStore";
-import type { Folder } from "@/lib/types";
+import type { Folder, LinkItem } from "@/lib/types";
 import SidebarFolderItem from "./SidebarFolderItem";
 
 type SidebarProps = {
   folders: Folder[];
+  /** 전체 링크. All 개수와 폴더별 개수를 세는 데 쓴다. */
+  links: LinkItem[];
   selectedFolderId?: string; // undefined면 All 선택
 };
 
-export default function Sidebar({ folders, selectedFolderId }: SidebarProps) {
-  const links = useLinks();
+export default function Sidebar({ folders, links, selectedFolderId }: SidebarProps) {
   const isAll = selectedFolderId === undefined;
 
   const countByFolder = new Map<string, number>();
   for (const link of links) {
+    if (link.folderId === null) continue;
     countByFolder.set(link.folderId, (countByFolder.get(link.folderId) ?? 0) + 1);
   }
 

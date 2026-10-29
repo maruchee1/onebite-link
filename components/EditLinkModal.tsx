@@ -17,14 +17,14 @@ const fieldClass =
 /** 링크의 폴더, 제목, 설명을 수정하는 모달 */
 export default function EditLinkModal({ link, onClose }: EditLinkModalProps) {
   const folders = useFolders();
-  const [folderId, setFolderId] = useState(link.folderId);
+  const [folderId, setFolderId] = useState(link.folderId ?? "");
   const [title, setTitle] = useState(link.title);
   const [description, setDescription] = useState(link.description ?? "");
 
   const trimmedTitle = title.trim();
   const trimmedDescription = description.trim();
   const changed =
-    folderId !== link.folderId ||
+    folderId !== (link.folderId ?? "") ||
     trimmedTitle !== link.title ||
     trimmedDescription !== (link.description ?? "");
   const canSave = trimmedTitle !== "" && changed;

@@ -1,19 +1,18 @@
-"use client";
-
 import Link from "next/link";
-import { useFolder } from "@/lib/folderStore";
-import { useLinksByFolder } from "@/lib/linkStore";
+import { getFolder } from "@/lib/folders";
+import { getLinksByFolder } from "@/lib/links";
 import LinkGrid from "./LinkGrid";
 import PageTitle from "./PageTitle";
 
 type FolderViewProps = {
-  id: string;
+  /** 폴더 id. 페이지의 params에서 오는 Promise를 그대로 받아 여기서 기다린다. */
+  id: string | Promise<string>;
 };
 
-/** 폴더 하나의 제목과 링크 그리드. 폴더·링크 저장소를 구독하므로 새로 추가된 항목도 표시된다. */
-export default function FolderView({ id }: FolderViewProps) {
-  const folder = useFolder(id);
-  const links = useLinksByFolder(id);
+/** 폴더 하나의 제목과 링크 그리드. folders·links 테이블을 읽으므로 Suspense 안에서 렌더링한다. */
+export default async function FolderView({ id }: FolderViewProps) {
+  const folderId = await id;
+  const [folder, links] = await Promise.all([getFolder(folderId), getLinksByFolder(folderId)]);
 
   if (!folder) {
     return (

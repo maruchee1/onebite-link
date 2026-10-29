@@ -2,20 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useFolders } from "@/lib/folderStore";
-import { addLink } from "@/lib/linkStore";
-import type { OpenGraphData } from "@/lib/types";
+import { createLink } from "@/app/actions/links";
+import type { Folder, OpenGraphData } from "@/lib/types";
+import { hostnameOf } from "@/lib/url";
 
 const fieldClass =
   "field w-full rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-base text-[var(--text)]";
-
-function hostnameOf(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return url;
-  }
-}
 
 async function fetchOpenGraph(url: string): Promise<OpenGraphData | null> {
   try {
@@ -27,9 +19,13 @@ async function fetchOpenGraph(url: string): Promise<OpenGraphData | null> {
   }
 }
 
-export default function NewLinkForm() {
+type NewLinkFormProps = {
+  /** folders 테이블에서 읽어 온 폴더 목록 */
+  folders: Folder[];
+};
+
+export default function NewLinkForm({ folders }: NewLinkFormProps) {
   const router = useRouter();
-  const folders = useFolders();
   const [url, setUrl] = useState("");
   // 사용자가 고르기 전까지는 첫 번째 폴더를 기본 선택
   const [selected, setSelected] = useState<string | null>(null);
@@ -38,6 +34,7 @@ export default function NewLinkForm() {
   const [notice, setNotice] = useState<string | null>(null);
 
   const trimmedUrl = url.trim();
+  // saving 동안은 false가 되어 저장 버튼이 잠기고, 중복 제출도 아래에서 무시된다
   const canSave = trimmedUrl !== "" && folderId !== "" && !saving;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -60,13 +57,19 @@ export default function NewLinkForm() {
     const og = await fetchOpenGraph(targetUrl.toString());
     const finalUrl = og?.url ?? targetUrl.toString();
 
-    addLink({
-      url: finalUrl,
-      title: og?.title ?? hostnameOf(finalUrl),
-      description: og?.description ?? undefined,
-      thumbnail: og?.image ?? undefined,
-      folderId,
-    });
+    try {
+      await createLink({
+        url: finalUrl,
+        title: og?.title ?? hostnameOf(finalUrl),
+        description: og?.description ?? undefined,
+        thumbnail: og?.image ?? undefined,
+        folderId,
+      });
+    } catch (err) {
+      setNotice(err instanceof Error ? err.message : "링크를 저장하지 못했습니다.");
+      setSaving(false);
+      return;
+    }
 
     router.push(`/folder/${folderId}`);
   };
@@ -123,7 +126,7 @@ export default function NewLinkForm() {
           disabled={!canSave}
           className="btn-primary rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium leading-none text-white disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {saving ? "정보 수집 중..." : "저장"}
+          {saving ? "저장 중..." : "저장"}
         </button>
       </div>
     </form>

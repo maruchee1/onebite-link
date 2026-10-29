@@ -1,17 +1,10 @@
 import type { LinkItem } from "@/lib/types";
+import { hostnameOf } from "@/lib/url";
 import LinkCardActions from "./LinkCardActions";
 
 type LinkCardProps = {
   link: LinkItem;
 };
-
-function hostnameOf(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return url;
-  }
-}
 
 export default function LinkCard({ link }: LinkCardProps) {
   return (

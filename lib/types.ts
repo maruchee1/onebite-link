@@ -9,7 +9,8 @@ export type LinkItem = {
   url: string;
   description?: string;
   thumbnail?: string;
-  folderId: string;
+  /** 폴더가 삭제되면 null이 된다 */
+  folderId: string | null;
   createdAt: string; // YYYY-MM-DD
 };
 

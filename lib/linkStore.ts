@@ -9,7 +9,7 @@ function isLink(value: unknown): value is LinkItem {
     typeof v.id === "string" &&
     typeof v.title === "string" &&
     typeof v.url === "string" &&
-    typeof v.folderId === "string" &&
+    (typeof v.folderId === "string" || v.folderId === null) &&
     typeof v.createdAt === "string" &&
     (v.description === undefined || typeof v.description === "string") &&
     (v.thumbnail === undefined || typeof v.thumbnail === "string")
