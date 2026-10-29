@@ -33,3 +33,16 @@ export async function renameFolder(id: string, name: string): Promise<void> {
 
   revalidatePath("/", "layout");
 }
+
+/** 폴더를 folders 테이블에서 삭제한다. 연결된 링크의 folder_id는 FK(on delete set null)로 비워진다. */
+export async function deleteFolder(id: string): Promise<void> {
+  const folderId = Number(id);
+  if (!Number.isInteger(folderId)) throw new Error("잘못된 폴더입니다.");
+
+  const supabase = createClient(await cookies());
+  const { error } = await supabase.from("folders").delete().eq("id", folderId);
+
+  if (error) throw new Error(`폴더를 삭제하지 못했습니다: ${error.message}`);
+
+  revalidatePath("/", "layout");
+}
