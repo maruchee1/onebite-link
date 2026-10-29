@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { removeFolder, renameFolder } from "@/lib/folderStore";
+import { renameFolder } from "@/app/actions/folders";
+import { removeFolder } from "@/lib/folderStore";
 import type { Folder } from "@/lib/types";
 import ConfirmModal from "./ConfirmModal";
 import FolderFormModal from "./FolderFormModal";
@@ -30,9 +31,8 @@ export default function SidebarFolderItem({
   const [modal, setModal] = useState<ModalKind>(null);
   const closeModal = () => setModal(null);
 
-  const handleRename = (name: string) => {
-    renameFolder(folder.id, name);
-  };
+  // Server Action을 그대로 반환해 모달이 완료될 때까지 저장 버튼을 잠근다
+  const handleRename = (name: string) => renameFolder(folder.id, name);
 
   const handleDelete = () => {
     removeFolder(folder.id);
