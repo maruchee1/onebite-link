@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Modal from "./Modal";
 
 type FolderFormModalProps = {
   title: string;
   submitLabel: string;
   initialName?: string;
-  onSubmit: (name: string) => void;
+  /** 비동기(Server Action)여도 된다. 완료될 때까지 저장 버튼이 잠긴다. */
+  onSubmit: (name: string) => void | Promise<void>;
   onClose: () => void;
 };
 
@@ -20,14 +21,24 @@ export default function FolderFormModal({
   onClose,
 }: FolderFormModalProps) {
   const [name, setName] = useState(initialName);
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
   const trimmed = name.trim();
   const canSave = trimmed !== "" && trimmed !== initialName.trim();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!canSave) return;
-    onSubmit(trimmed);
-    onClose();
+    // 저장 중에 다시 제출(중복 클릭, Enter 연타)되면 무시한다
+    if (!canSave || isPending) return;
+
+    startTransition(async () => {
+      try {
+        await onSubmit(trimmed);
+        onClose();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "저장에 실패했습니다.");
+      }
+    });
   };
 
   return (
@@ -45,24 +56,27 @@ export default function FolderFormModal({
             value={name}
             onChange={(e) => setName(e.target.value)}
             onFocus={(e) => e.target.select()}
+            disabled={isPending}
             className="field w-full rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-base text-[var(--text)]"
           />
+          {error && <p className="text-sm text-[var(--error)]">{error}</p>}
         </div>
 
         <div className="mt-2 flex justify-end gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="btn-secondary rounded-md border border-[var(--border)] bg-transparent px-4 py-2 text-sm font-medium leading-none text-[var(--text)]"
+            disabled={isPending}
+            className="btn-secondary rounded-md border border-[var(--border)] bg-transparent px-4 py-2 text-sm font-medium leading-none text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-40"
           >
             취소
           </button>
           <button
             type="submit"
-            disabled={!canSave}
+            disabled={!canSave || isPending}
             className="btn-primary rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium leading-none text-white disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {submitLabel}
+            {isPending ? "저장 중..." : submitLabel}
           </button>
         </div>
       </form>

@@ -1,16 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useFolders } from "@/lib/folderStore";
 import { useLinks } from "@/lib/linkStore";
+import type { Folder } from "@/lib/types";
 import SidebarFolderItem from "./SidebarFolderItem";
 
 type SidebarProps = {
+  folders: Folder[];
   selectedFolderId?: string; // undefined면 All 선택
 };
 
-export default function Sidebar({ selectedFolderId }: SidebarProps) {
-  const folders = useFolders();
+export default function Sidebar({ folders, selectedFolderId }: SidebarProps) {
   const links = useLinks();
   const isAll = selectedFolderId === undefined;
 

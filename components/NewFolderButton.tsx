@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { addFolder } from "@/lib/folderStore";
+import { createFolder } from "@/app/actions/folders";
 import FolderFormModal from "./FolderFormModal";
 
 export default function NewFolderButton() {
@@ -20,7 +20,7 @@ export default function NewFolderButton() {
         <FolderFormModal
           title="새 폴더"
           submitLabel="저장"
-          onSubmit={addFolder}
+          onSubmit={createFolder}
           onClose={() => setOpen(false)}
         />
       )}
