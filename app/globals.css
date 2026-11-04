@@ -129,3 +129,10 @@ body {
   background-position: right 12px center;
   padding-right: 36px;
 }
+
+/* 토스트 닫기 버튼 */
+.toast-close:hover {
+  background: var(--hover-bg);
+  color: var(--text);
+}
+
