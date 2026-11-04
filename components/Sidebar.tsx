@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { Folder, LinkItem } from "@/lib/types";
+import LogoutButton from "./LogoutButton";
 import SidebarFolderItem from "./SidebarFolderItem";
 
 type SidebarProps = {
@@ -21,7 +22,7 @@ export default function Sidebar({ folders, links, selectedFolderId }: SidebarPro
   }
 
   return (
-    <aside className="w-60 shrink-0 border-r border-[var(--border)] bg-[var(--bg)] px-3 py-6">
+    <aside className="flex w-60 shrink-0 flex-col border-r border-[var(--border)] bg-[var(--bg)] px-3 py-6">
       <Link
         href="/"
         aria-current={isAll ? "page" : undefined}
@@ -48,6 +49,11 @@ export default function Sidebar({ folders, links, selectedFolderId }: SidebarPro
           />
         ))}
       </ul>
+
+      {/* 남는 공간을 밀어내고 사이드바 최하단에 고정 */}
+      <div className="mt-auto pt-8">
+        <LogoutButton />
+      </div>
     </aside>
   );
 }

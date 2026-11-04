@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 
 export type AuthResult = {
@@ -80,4 +81,11 @@ export async function signIn(email: string, password: string): Promise<AuthResul
   }
 
   return { error: null };
+}
+
+/** 현재 세션을 끝내고 로그인 페이지로 보낸다. */
+export async function signOut(): Promise<void> {
+  const supabase = createClient(await cookies());
+  await supabase.auth.signOut();
+  redirect("/login");
 }
