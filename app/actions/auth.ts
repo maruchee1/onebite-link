@@ -48,3 +48,36 @@ export async function signUp(email: string, password: string): Promise<AuthResul
 
   return { error: null };
 }
+
+const SIGNIN_ERROR_MESSAGES: Record<string, string> = {
+  invalid_credentials: "이메일 또는 비밀번호가 올바르지 않습니다.",
+  email_not_confirmed: "이메일 인증이 완료되지 않았습니다. 메일함을 확인해 주세요.",
+  user_banned: "이용이 제한된 계정입니다.",
+  user_not_found: "이메일 또는 비밀번호가 올바르지 않습니다.",
+  email_address_invalid: "올바른 이메일 주소를 입력해 주세요.",
+  validation_failed: "입력한 정보를 다시 확인해 주세요.",
+  email_provider_disabled: "현재 이메일 로그인이 비활성화되어 있습니다.",
+  over_request_rate_limit: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+};
+
+const SIGNIN_DEFAULT_ERROR = "로그인에 실패했습니다. 잠시 후 다시 시도해 주세요.";
+
+/**
+ * 이메일·비밀번호로 로그인한다.
+ * 성공하면 @supabase/ssr가 세션 쿠키를 응답에 실어 준다.
+ */
+export async function signIn(email: string, password: string): Promise<AuthResult> {
+  const trimmedEmail = email.trim();
+  if (trimmedEmail === "" || password === "") {
+    return { error: "이메일과 비밀번호를 모두 입력해 주세요." };
+  }
+
+  const supabase = createClient(await cookies());
+  const { error } = await supabase.auth.signInWithPassword({ email: trimmedEmail, password });
+
+  if (error) {
+    return { error: SIGNIN_ERROR_MESSAGES[error.code ?? ""] ?? SIGNIN_DEFAULT_ERROR };
+  }
+
+  return { error: null };
+}
