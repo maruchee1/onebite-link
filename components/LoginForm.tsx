@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "@/app/actions/auth";
 import Toast from "./Toast";
@@ -81,6 +82,12 @@ export default function LoginForm() {
         >
           {isPending ? "로그인 중..." : "로그인"}
         </button>
+
+        <p className="text-center text-sm leading-[1.4]">
+          <Link href="/forgot-password" className="link-accent text-[var(--text-sub)]">
+            비밀번호를 잊으셨나요?
+          </Link>
+        </p>
       </form>
     </>
   );

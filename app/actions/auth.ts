@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 
@@ -88,4 +88,72 @@ export async function signOut(): Promise<void> {
   const supabase = createClient(await cookies());
   await supabase.auth.signOut();
   redirect("/login");
+}
+
+const RESET_REQUEST_ERROR_MESSAGES: Record<string, string> = {
+  email_address_invalid: "올바른 이메일 주소를 입력해 주세요.",
+  validation_failed: "입력한 정보를 다시 확인해 주세요.",
+  user_not_found: "가입되지 않은 이메일입니다.",
+  over_email_send_rate_limit: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+  over_request_rate_limit: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+};
+
+const RESET_REQUEST_DEFAULT_ERROR = "리셋 링크 발송에 실패했습니다. 잠시 후 다시 시도해 주세요.";
+
+/** 현재 요청의 origin (예: http://localhost:3000). 리셋 링크가 돌아올 주소를 만드는 데 쓴다. */
+async function getRequestOrigin(): Promise<string> {
+  const h = await headers();
+  const origin = h.get("origin");
+  if (origin) return origin;
+  const proto = h.get("x-forwarded-proto") ?? "http";
+  return `${proto}://${h.get("host")}`;
+}
+
+/** 입력한 이메일로 비밀번호 리셋 링크를 보낸다. 링크를 누르면 /auth/confirm을 거쳐 재설정 페이지로 간다. */
+export async function requestPasswordReset(email: string): Promise<AuthResult> {
+  const trimmedEmail = email.trim();
+  if (trimmedEmail === "") {
+    return { error: "이메일을 입력해 주세요." };
+  }
+
+  const supabase = createClient(await cookies());
+  const { error } = await supabase.auth.resetPasswordForEmail(trimmedEmail, {
+    redirectTo: `${await getRequestOrigin()}/auth/confirm`,
+  });
+
+  if (error) {
+    return { error: RESET_REQUEST_ERROR_MESSAGES[error.code ?? ""] ?? RESET_REQUEST_DEFAULT_ERROR };
+  }
+
+  return { error: null };
+}
+
+const UPDATE_PASSWORD_ERROR_MESSAGES: Record<string, string> = {
+  weak_password: "비밀번호는 6자 이상이어야 합니다.",
+  same_password: "이전과 다른 비밀번호를 입력해 주세요.",
+  validation_failed: "입력한 정보를 다시 확인해 주세요.",
+  over_request_rate_limit: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+};
+
+const UPDATE_PASSWORD_DEFAULT_ERROR = "비밀번호 재설정에 실패했습니다. 잠시 후 다시 시도해 주세요.";
+const RESET_LINK_INVALID_ERROR =
+  "리셋 링크가 만료되었거나 올바르지 않습니다. 비밀번호 찾기를 다시 진행해 주세요.";
+
+/** 리셋 링크로 만들어진 세션으로 새 비밀번호를 저장한다. */
+export async function updatePassword(password: string): Promise<AuthResult> {
+  if (password === "") {
+    return { error: "새 비밀번호를 입력해 주세요." };
+  }
+
+  const supabase = createClient(await cookies());
+  const { error } = await supabase.auth.updateUser({ password });
+
+  if (error) {
+    if (error.name === "AuthSessionMissingError") {
+      return { error: RESET_LINK_INVALID_ERROR };
+    }
+    return { error: UPDATE_PASSWORD_ERROR_MESSAGES[error.code ?? ""] ?? UPDATE_PASSWORD_DEFAULT_ERROR };
+  }
+
+  return { error: null };
 }
