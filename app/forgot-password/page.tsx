@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import AuthCard from "@/components/AuthCard";
 import ForgotPasswordForm from "@/components/ForgotPasswordForm";
+
+export const metadata: Metadata = {
+  title: "비밀번호 찾기",
+  description: "가입한 이메일로 비밀번호 리셋 링크를 보내드립니다",
+};
 
 export default function ForgotPasswordPage() {
   return (

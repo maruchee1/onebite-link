@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import AppShell from "@/components/AppShell";
 import NewLinkForm from "@/components/NewLinkForm";
@@ -9,6 +10,11 @@ async function NewLinkFormLoader() {
   const folders = await getFolders();
   return <NewLinkForm folders={folders} />;
 }
+
+export const metadata: Metadata = {
+  title: "새 링크",
+  description: "저장할 링크 주소와 폴더를 선택하세요",
+};
 
 export default function NewLinkPage() {
   return (

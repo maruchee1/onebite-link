@@ -142,3 +142,10 @@ body {
   opacity: 0.85;
 }
 
+
+/* 회색 보조 링크 (개인정보처리방침 등) */
+.link-muted:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+

@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import AllLinksView from "@/components/AllLinksView";
 import AppShell from "@/components/AppShell";
 import PageTitle from "@/components/PageTitle";
+
+export const metadata: Metadata = {
+  title: "모든 링크",
+  description: "저장한 모든 링크를 한눈에 봅니다",
+};
 
 export default function Home() {
   return (

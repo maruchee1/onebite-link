@@ -53,6 +53,12 @@ export default function Sidebar({ folders, links, selectedFolderId }: SidebarPro
       {/* 남는 공간을 밀어내고 사이드바 최하단에 고정 */}
       <div className="mt-auto pt-8">
         <LogoutButton />
+        <Link
+          href="/privacy"
+          className="link-muted mt-3 block text-center text-[13px] leading-[1.4] text-[var(--text-sub)]"
+        >
+          개인정보 처리방침
+        </Link>
       </div>
     </aside>
   );

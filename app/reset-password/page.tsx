@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import AuthCard from "@/components/AuthCard";
@@ -10,6 +11,11 @@ async function ResetPasswordFormLoader({ searchParams }: ResetPasswordPageProps)
   const { error } = await searchParams;
   return <ResetPasswordForm invalidLink={error === "link"} />;
 }
+
+export const metadata: Metadata = {
+  title: "비밀번호 재설정",
+  description: "새로 사용할 비밀번호를 입력하세요",
+};
 
 export default function ResetPasswordPage(props: ResetPasswordPageProps) {
   return (

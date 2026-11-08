@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import AuthCard from "@/components/AuthCard";
@@ -15,6 +16,11 @@ async function LoginFormLoader({ searchParams }: LoginPageProps) {
   const message = typeof error === "string" ? (CALLBACK_ERROR_MESSAGES[error] ?? null) : null;
   return <LoginForm initialError={message} />;
 }
+
+export const metadata: Metadata = {
+  title: "로그인",
+  description: "한입 링크 계정에 로그인하세요",
+};
 
 export default function LoginPage(props: LoginPageProps) {
   return (
