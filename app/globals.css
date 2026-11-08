@@ -136,3 +136,9 @@ body {
   color: var(--text);
 }
 
+
+/* 카카오 로그인 이미지 버튼 */
+.kakao-login:hover:not(:disabled) {
+  opacity: 0.85;
+}
+

@@ -4,16 +4,22 @@ import { useCallback, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "@/app/actions/auth";
+import KakaoLoginButton from "./KakaoLoginButton";
 import Toast from "./Toast";
 
 const fieldClass =
   "field w-full rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-base text-[var(--text)]";
 
-export default function LoginForm() {
+type LoginFormProps = {
+  /** 소셜 로그인 콜백 등에서 넘어온 오류. 페이지가 열리자마자 토스트로 보여준다. */
+  initialError?: string | null;
+};
+
+export default function LoginForm({ initialError = null }: LoginFormProps) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(initialError);
   const [isPending, startTransition] = useTransition();
 
   const closeToast = useCallback(() => setToast(null), []);
@@ -82,6 +88,8 @@ export default function LoginForm() {
         >
           {isPending ? "로그인 중..." : "로그인"}
         </button>
+
+        <KakaoLoginButton disabled={isPending} />
 
         <p className="text-center text-sm leading-[1.4]">
           <Link href="/forgot-password" className="link-accent text-[var(--text-sub)]">

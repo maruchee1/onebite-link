@@ -157,3 +157,21 @@ export async function updatePassword(password: string): Promise<AuthResult> {
 
   return { error: null };
 }
+
+/**
+ * 카카오 로그인을 시작한다. Supabase가 만든 카카오 인증 URL로 이동시키고,
+ * 인증이 끝나면 /auth/callback으로 돌아와 세션을 만든다.
+ */
+export async function signInWithKakao(): Promise<AuthResult> {
+  const supabase = createClient(await cookies());
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "kakao",
+    options: { redirectTo: `${await getRequestOrigin()}/auth/callback` },
+  });
+
+  if (error || !data.url) {
+    return { error: "카카오 로그인을 시작하지 못했습니다. 잠시 후 다시 시도해 주세요." };
+  }
+
+  redirect(data.url);
+}
