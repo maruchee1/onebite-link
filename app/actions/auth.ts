@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
@@ -8,6 +9,14 @@ export type AuthResult = {
   /** 실패했을 때 화면에 그대로 보여줄 한국어 메시지. 성공이면 null. */
   error: string | null;
 };
+
+/**
+ * 로그인한 계정이 바뀌었으니(로그인·로그아웃·비밀번호 재설정) 캐시된 화면을 모두 버리고
+ * 다음 화면부터 현재 계정의 데이터를 처음부터 다시 불러오게 한다.
+ */
+function refreshUserData() {
+  revalidatePath("/", "layout");
+}
 
 const SIGNUP_ERROR_MESSAGES: Record<string, string> = {
   user_already_exists: "이미 가입된 이메일입니다.",
@@ -47,6 +56,7 @@ export async function signUp(email: string, password: string): Promise<AuthResul
     return { error: "이미 가입된 이메일입니다." };
   }
 
+  refreshUserData();
   return { error: null };
 }
 
@@ -80,6 +90,7 @@ export async function signIn(email: string, password: string): Promise<AuthResul
     return { error: SIGNIN_ERROR_MESSAGES[error.code ?? ""] ?? SIGNIN_DEFAULT_ERROR };
   }
 
+  refreshUserData();
   return { error: null };
 }
 
@@ -87,6 +98,7 @@ export async function signIn(email: string, password: string): Promise<AuthResul
 export async function signOut(): Promise<void> {
   const supabase = createClient(await cookies());
   await supabase.auth.signOut();
+  refreshUserData();
   redirect("/login");
 }
 
@@ -155,6 +167,7 @@ export async function updatePassword(password: string): Promise<AuthResult> {
     return { error: UPDATE_PASSWORD_ERROR_MESSAGES[error.code ?? ""] ?? UPDATE_PASSWORD_DEFAULT_ERROR };
   }
 
+  refreshUserData();
   return { error: null };
 }
 

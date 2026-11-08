@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
+import { getCurrentUserId } from "./auth";
 import type { LinkItem } from "./types";
 import { hostnameOf } from "./url";
 
@@ -33,12 +34,16 @@ function toLinkItem(row: LinkRow): LinkItem {
   };
 }
 
-/** 전체 링크를 최신순으로 가져온다. 서버 컴포넌트에서만 호출한다. */
+/** 현재 로그인한 사용자의 전체 링크를 최신순으로 가져온다. 로그인하지 않았으면 빈 배열. */
 export async function getLinks(): Promise<LinkItem[]> {
   const supabase = createClient(await cookies());
+  const userId = await getCurrentUserId(supabase);
+  if (!userId) return [];
+
   const { data, error } = await supabase
     .from("links")
     .select(LINK_COLUMNS)
+    .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .order("id", { ascending: false });
 
@@ -47,16 +52,20 @@ export async function getLinks(): Promise<LinkItem[]> {
   return (data as LinkRow[]).map(toLinkItem);
 }
 
-/** 특정 폴더의 링크를 최신순으로 가져온다. 폴더 id가 숫자가 아니면 빈 배열을 돌려준다. */
+/** 현재 사용자의 특정 폴더 링크를 최신순으로 가져온다. 폴더 id가 숫자가 아니거나 로그인하지 않았으면 빈 배열. */
 export async function getLinksByFolder(folderId: string): Promise<LinkItem[]> {
   const id = Number(folderId);
   if (!Number.isInteger(id)) return [];
 
   const supabase = createClient(await cookies());
+  const userId = await getCurrentUserId(supabase);
+  if (!userId) return [];
+
   const { data, error } = await supabase
     .from("links")
     .select(LINK_COLUMNS)
     .eq("folder_id", id)
+    .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .order("id", { ascending: false });
 
